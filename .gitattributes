@@ -1,0 +1,2 @@
+tp3/escuelas.db filter=lfs diff=lfs merge=lfs -text
+tp2/aeropuertos.db filter=lfs diff=lfs merge=lfs -text
