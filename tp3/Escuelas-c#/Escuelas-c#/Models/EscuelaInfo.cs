@@ -9,6 +9,7 @@ namespace Escuelas_c_.Models
     public class Escuela
     {
         public string Nombre { get; set; }
+        public string Id{ get; private set; }
         public string CueAnexo { get; set; }
         public string Domicilio { get; set; }
         public string Localidad { get; set; }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
 using System.Data.SQLite;
 
 //Install-Package System.Data.SQLite
@@ -32,10 +34,11 @@ namespace Escuelas_c_.Models
                   WHERE j.nombre = @jurisdiccion and l.nombre = 'SAN NICOLAS DE LOS ARROYOS'", conn);
                 //cambiar el valor del comando usando el string que pase yo explicitamente
                 cmd.Parameters.AddWithValue("@jurisdiccion", jurisdiccion);
-
+                //abrir mi conexion al archivo en sqlite
                 conn.Open();
+                //crear una variable tipo lector de sqlite
                 var reader = cmd.ExecuteReader();
-                //insertar en mi lista todas las escuelas y sus respectivos valores
+                //ejecutar el comando de sqlite en mi base de datos
                 while (reader.Read())
                 {
                     resultados.Add(new Escuela
@@ -50,6 +53,37 @@ namespace Escuelas_c_.Models
             }
 
             return resultados;
+        }
+        public bool ActualizarEscuela(Escuela escuela)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        var cmd = new SqlCommand("sp_ActualizarEscuela", conn, transaction)
+                        {
+                            CommandType = CommandType.StoredProcedure
+                        };
+
+                        cmd.Parameters.AddWithValue("@id", escuela.Id);
+                        cmd.Parameters.AddWithValue("@nombre", escuela.Nombre);
+                        // ... otros parámetros
+
+                        int affectedRows = cmd.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        return affectedRows > 0;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
         }
     }
 }
