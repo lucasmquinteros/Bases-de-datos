@@ -54,6 +54,23 @@ namespace Escuelas_c_.Models
 
             return resultados;
         }
+        public DataTable AnalizarEsquemaBaseDatos()
+        {
+            DataTable resultados = new DataTable();
+            
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_AnalizarEsquema", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                
+                resultados.Load(reader);
+            }
+            
+            return resultados;
+        }
         public bool ActualizarEscuela(Escuela escuela)
         {
             using (var conn = new SqlConnection(_connectionString))

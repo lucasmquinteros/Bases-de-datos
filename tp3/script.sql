@@ -155,3 +155,86 @@ BEGIN
     
     DROP TABLE #ResultadoEsquema;
 END
+
+
+CREATE PROCEDURE sp_AnalizarEsquema
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Tabla para resultados
+    CREATE TABLE #ResultadoEsquema (
+        TipoObjeto VARCHAR(50),
+        NombreObjeto VARCHAR(255),
+        TipoElemento VARCHAR(50),
+        NombreElemento VARCHAR(255),
+        Detalles VARCHAR(MAX)
+    );
+    
+    -- 1. Analizar tablas
+    INSERT INTO #ResultadoEsquema
+    SELECT 
+        'TABLA' AS TipoObjeto,
+        t.name AS NombreObjeto,
+        'DEFINICION' AS TipoElemento,
+        '' AS NombreElemento,
+        'Columnas: ' + CAST(COUNT(c.name) AS VARCHAR) + 
+        ', Filas estimadas: ' + CAST(p.rows AS VARCHAR) AS Detalles
+    FROM sys.tables t
+    INNER JOIN sys.columns c ON t.object_id = c.object_id
+    INNER JOIN sys.partitions p ON t.object_id = p.object_id AND p.index_id IN (0,1)
+    GROUP BY t.name, p.rows;
+    
+    -- 2. Analizar columnas (PK, FK, tipos)
+    INSERT INTO #ResultadoEsquema
+    SELECT 
+        'TABLA' AS TipoObjeto,
+        t.name AS NombreObjeto,
+        'COLUMNA' AS TipoElemento,
+        c.name AS NombreElemento,
+        'Tipo: ' + tp.name + 
+        CASE WHEN ic.column_id IS NOT NULL THEN ', PK' ELSE '' END +
+        CASE WHEN fk.parent_object_id IS NOT NULL THEN ', FK' ELSE '' END +
+        CASE WHEN c.is_nullable = 1 THEN ', NULL' ELSE ', NOT NULL' END AS Detalles
+    FROM sys.tables t
+    INNER JOIN sys.columns c ON t.object_id = c.object_id
+    INNER JOIN sys.types tp ON c.user_type_id = tp.user_type_id
+    LEFT JOIN sys.indexes i ON t.object_id = i.object_id AND i.is_primary_key = 1
+    LEFT JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id AND c.column_id = ic.column_id
+    LEFT JOIN sys.foreign_key_columns fkc ON t.object_id = fkc.parent_object_id AND c.column_id = fkc.parent_column_id
+    LEFT JOIN sys.foreign_keys fk ON fkc.constraint_object_id = fk.object_id;
+    
+    -- 3. Analizar constraints
+    INSERT INTO #ResultadoEsquema
+    SELECT 
+        'TABLA' AS TipoObjeto,
+        OBJECT_NAME(parent_object_id) AS NombreObjeto,
+        'CONSTRAINT' AS TipoElemento,
+        name AS NombreElemento,
+        CASE type
+            WHEN 'PK' THEN 'PRIMARY KEY'
+            WHEN 'FK' THEN 'FOREIGN KEY'
+            WHEN 'UQ' THEN 'UNIQUE CONSTRAINT'
+            WHEN 'C' THEN 'CHECK CONSTRAINT'
+            WHEN 'D' THEN 'DEFAULT CONSTRAINT'
+            ELSE type_desc
+        END AS Detalles
+    FROM sys.objects
+    WHERE type IN ('PK','FK','UQ','C','D');
+    
+    -- 4. Analizar vistas
+    INSERT INTO #ResultadoEsquema
+    SELECT 
+        'VISTA' AS TipoObjeto,
+        name AS NombreObjeto,
+        'DEFINICION' AS TipoElemento,
+        '' AS NombreElemento,
+        'Definición: ' + SUBSTRING(OBJECT_DEFINITION(object_id), 1, 100) + '...' AS Detalles
+    FROM sys.views;
+    
+    -- Devolver resultados
+    SELECT * FROM #ResultadoEsquema
+    ORDER BY TipoObjeto, NombreObjeto, TipoElemento, NombreElemento;
+    
+    DROP TABLE #ResultadoEsquema;
+END
