@@ -9,13 +9,14 @@ public class Program
 {
     public static void Main()
     {
-        // Configurar la ruta al archivo .db
-        string dbPath = "C:/SQLite/tp3/escuelas.db";
-        //string connectionString = $"Data Source={dbPath};Version=3;";
-        string connectionString = "SERVER=localhost\\SQLEXPRESS;DATABASE=Aeropuerto;Trusted_Connection=yes;";
+         //Configurar la ruta al archivo .db
+        string dbPath = "C:/Users/lmartiniquinteros/sqlite/Bases-de-datos/tp3/escuelas.db" +
+            "";
+        string connectionString = $"Data Source={dbPath};Version=3;";
+        string connectionStringSqlserv = "SERVER=localhost\\SQLEXPRESS;DATABASE=Aeropuerto;Trusted_Connection=yes;";
 
         var escuelaService = new EscuelaService(connectionString);
-        /*
+        //var storage_procedure = new EscuelaService(connectionStringSqlserv);
 
         //var escuelas = escuelaService.ObtenerEscuelasPorJurisdiccion("Córdoba");
 
@@ -45,11 +46,12 @@ public class Program
             {
                 t.print();
         }
-            }*/
-        var analisis = escuelaService.AnalizarEsquemaBaseDatos();
+            }
+        /*
+        var analisis = storage_procedure.AnalizarEsquemaBaseDatos();
         foreach (DataRow row in analisis.Rows)
         {
             Console.WriteLine($"{row["TipoObjeto"]} {row["NombreObjeto"]} - {row["TipoElemento"]}: {row["NombreElemento"]} | {row["Detalles"]}");
-        }
+        }*/
     }
 }

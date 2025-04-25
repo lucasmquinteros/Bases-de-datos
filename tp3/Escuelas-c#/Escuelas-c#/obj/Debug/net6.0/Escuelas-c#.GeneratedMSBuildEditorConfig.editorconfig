@@ -8,6 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Escuelas_c_
-build_property.ProjectDir = C:\SQLite\tp3\Escuelas-c#\Escuelas-c#\
-build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.ProjectDir = C:\Users\lmartiniquinteros\sqlite\Bases-de-datos\tp3\Escuelas-c#\Escuelas-c#\
