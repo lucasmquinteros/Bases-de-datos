@@ -2,11 +2,11 @@ import sqlite3
 import pyodbc
 
 # Conectar a SQLite
-sqlite_conn = sqlite3.connect('C:/SQLite/tp2/aeropuertos.db')
+sqlite_conn = sqlite3.connect('C:/SQLite/libreta/facultad.db')
 sqlite_cur = sqlite_conn.cursor()
 
 # Conectar a SQL Server
-sqlserver_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=Aeropuerto;Trusted_Connection=yes;')
+sqlserver_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=Facultad;Trusted_Connection=yes;')
 sqlserver_cur = sqlserver_conn.cursor()
 
 # Mapeo de tipos
@@ -21,7 +21,7 @@ tipo_sqlite_a_sqlserver = {
 # Obtener las tablas (excluyendo las internas de SQLite)
 sqlite_cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
 tablas = [fila[0] for fila in sqlite_cur.fetchall() if not fila[0].startswith('sqlite_')]
-
+print(f"Tablas encontradas: {tablas}")
 for tabla in tablas:
     print(f"Migrando estructura de tabla: {tabla}")
 
