@@ -8,7 +8,7 @@ import sqlite3
 connection = sqlite3.connect("C:/SQLite/proyectojuan/facultad.db")
 cursor =connection.cursor()
 
-cursor.execute("")
+cursor.execute("SELECT * from Alumno")
 
 #alumno =  db.get_alumno("12345678")
 #carrera1 = Carrera("1", "Ingeniería en Sistemas")
