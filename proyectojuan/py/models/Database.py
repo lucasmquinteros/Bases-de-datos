@@ -45,5 +45,14 @@ class Database:
         """, (carrera.id, carrera.nombre))
         self.connection.commit()
 
+    def get_alumno(self, dni: str):
+        self.cursor.execute("SELECT * FROM Alumno WHERE dni = ?", (dni,))
+        result = self.cursor.fetchone()
+        if result:
+            print(f"Alumno encontrado: {result}")
+            return result
+        print(f"No se encontró un alumno con DNI {dni}.")
+        return None
+
     def close(self):
         self.connection.close()

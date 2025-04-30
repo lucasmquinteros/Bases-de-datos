@@ -1,10 +1,17 @@
 from models.Alumno import Alumno
 from models.Carrera import Carrera
 from models.Database import Database
+import sqlite3
 
 
-alumnno1 = Alumno("1", "Juan", "Pérez", "12345678", "2000-01-01", "juan@gmail.com", "123456789", "CalleFalsa 123", "2023-01-01", "Activo")
-db = Database("C:/SQLite/proyectojuan/facultad.db")
-db.insertar_alumno(alumnno1)
-db.close()
+#db = Database("C:/SQLite/proyectojuan/facultad.db")
+connection = sqlite3.connect("C:/SQLite/proyectojuan/facultad.db")
+cursor =connection.cursor()
+
+cursor.execute("")
+
+#alumno =  db.get_alumno("12345678")
+#carrera1 = Carrera("1", "Ingeniería en Sistemas")
+#db.insertar_carrera(carrera1)
+#db.close()
     
